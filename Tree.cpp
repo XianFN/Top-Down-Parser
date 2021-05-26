@@ -1,0 +1,116 @@
+//
+// Created by xian on 25/05/2021.
+//
+
+#include "Tree.h"
+
+Tree::Tree(){
+    root= new Node('S');
+}
+
+Tree::~Tree(){
+    clearRecursive(root);
+}
+bool Tree::insertChild(Node * actualNode, char &value,int index, const bool &isfinal_)
+{
+    bool isTaller = false;
+    Node * newNode = new Node(value,isfinal_,index,actualNode);
+    actualNode->childs.push_back(newNode);
+
+    return true;
+}
+void Tree::insertChilds(char valueFather,string newchilds,vector<int> index){
+    Node * node;
+    if (index.size()==1){
+        node=root;
+    }else {
+        for (int i = 0; i < index.size(); ++i) {
+            node = node->childs[index[i]];
+        }
+
+    }
+
+        node->value=valueFather;
+        for (int i = 0; i < newchilds.size(); ++i) {
+                if (!isupper(newchilds[i])){
+                    cout<<"LOWER LETTER"<<endl;
+                    insertChild(root,newchilds[i],0,true);
+                }else{
+                    insertChild(root,newchilds[i],0,false);
+                }
+        }
+
+
+
+
+}
+
+string Tree::getWord(){
+    static string word ="";
+    static bool stop=false;
+    recursiveGetWord(root,word,stop);
+    return word;
+}
+bool Tree::recursiveGetWord(Node* node, string & word,bool & stop ){
+
+    if (node->isFinal && !stop){
+        word += node->value;
+    }
+    if (!node->isFinal && node->childs.size()==0){
+        stop=true;
+    }
+    for (int i = 0; i < node->childs.size(); ++i) {
+        recursiveGetWord(node->childs[i],word,stop);
+    }
+
+
+}
+Node* Tree::getNextNonTerminal(Node * actualNode){
+
+    static Node * node = nullptr;
+    static bool stop=false;
+    recursiveGetNextNonTerminal(actualNode,stop,node);
+
+    return node;
+
+}
+ void Tree::recursiveGetNextNonTerminal(Node * actualNode,bool & stop,Node *& find){
+    if (actualNode->childs.size()==0 && !actualNode->isFinal){
+        if (!stop){
+            find = actualNode;
+            stop=true;
+        }
+    }else{
+        for (int i = 0; i < actualNode->childs.size(); ++i) {
+            recursiveGetNextNonTerminal(actualNode->childs[i],stop,find);
+        }
+    }
+
+
+
+
+}
+bool Tree::deleteChilds(Node * node){
+
+    for (int i = 0; i < node->childs.size(); ++i) {
+        clearRecursive(node->childs[i]);
+    }
+    node->childs.clear();
+
+
+
+}
+// *& IMPORTANTE
+void Tree::clearRecursive(Node *& tree)
+{
+    if (tree != nullptr)
+    {
+
+        for (int i = 0; i < tree->childs.size(); ++i) {
+            clearRecursive(tree->childs[i]);
+        }
+
+        delete tree;
+        tree = nullptr;
+    }
+}

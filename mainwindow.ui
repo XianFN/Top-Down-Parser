@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <author/>
+    <comment/>
+    <exportmacro/>
+    <class>MainWindow</class>
+    <widget class="QMainWindow" name="MainWindow">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>418</width>
+                <height>437</height>
+            </rect>
+        </property>
+        <property name="windowTitle">
+            <string>MainWindow</string>
+        </property>
+        <widget class="QWidget" name="centralwidget">
+            <widget class="QTreeWidget" name="treeWidget">
+                <property name="geometry">
+                    <rect>
+                        <x>70</x>
+                        <y>91</y>
+                        <width>311</width>
+                        <height>251</height>
+                    </rect>
+                </property>
+                <column>
+                    <property name="text">
+                        <string notr="true">1</string>
+                    </property>
+                </column>
+            </widget>
+            <widget class="QPushButton" name="pushButton">
+                <property name="geometry">
+                    <rect>
+                        <x>240</x>
+                        <y>50</y>
+                        <width>80</width>
+                        <height>25</height>
+                    </rect>
+                </property>
+                <property name="text">
+                    <string>Check</string>
+                </property>
+            </widget>
+            <widget class="QLineEdit" name="lineEdit">
+                <property name="geometry">
+                    <rect>
+                        <x>80</x>
+                        <y>50</y>
+                        <width>141</width>
+                        <height>25</height>
+                    </rect>
+                </property>
+            </widget>
+        </widget>
+    </widget>
+    <pixmapfunction/>
+    <connections/>
+</ui>
