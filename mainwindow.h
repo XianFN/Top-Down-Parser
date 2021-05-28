@@ -30,9 +30,12 @@ public:
     Tree tree;
 
     ~MainWindow() override;
+    void drawTree();
     void OpenQFile();
-    void runAlgorithm( Node* actualnode,int indexWord,int height, int col, vector<int> &index, vector<int> &maxIndex);
-private slots:
+    bool runAlgorithm(Node* actualnode, int indexWord, int height,vector<int> &index, vector<int> &maxIndex);
+    void addTreeRoot(QString name);
+    void addTreeChild(QTreeWidgetItem *parent, QString name);
+    private slots:
     void on_pushButton_clicked();
 private:
     Ui::MainWindow *ui;

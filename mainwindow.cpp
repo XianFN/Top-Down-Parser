@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
     OpenQFile();
 
 
+
 }
 
 MainWindow::~MainWindow() {
@@ -66,109 +67,160 @@ void MainWindow::on_pushButton_clicked() {
 
 
 //    word = this->ui->lineEdit->text().toStdString();
+
     word= "aacbc";
     static vector<int> index;
     static vector<int> maxIndex;
-    runAlgorithm(tree.root,0,0, 0, index,maxIndex);
+    bool exist= runAlgorithm(tree.root,0,0,index,maxIndex);
+    if (exist){
+        ui->pushButton->setText("FUNCIONA");
+    }
 
 }
 
-void MainWindow::runAlgorithm(Node* actualnode,int indexWord,int height, int col, vector<int> &index, vector<int> &maxIndex) {
+bool MainWindow::runAlgorithm(Node* actualnode, int indexWord, int height, vector<int> &index, vector<int> &maxIndex) {
+
+    bool done= false;
+    if (!done) {
+        drawTree();
+
+        if (height < 0) {
+            return false;
+        }else {
+
+            if (index.size() <= height) {
+                index.push_back(0);
+
+                map<char, vector<string>>::iterator it = productions.find(actualnode->value);
+                if (it != productions.end() && done != true) { //check
+                    cout << "EXISTE2";
+                    maxIndex.push_back(it->second.size() - 1);
+                    done = runAlgorithm(actualnode, indexWord, height, index, maxIndex);
+
+                } else {
+                    Node *node = actualnode;
+                    if (height != 0) {
+                        index.pop_back();
+                        maxIndex.pop_back();
+                        index[height - 1]++;
+                        //TODO borrar arbol¿?¿?
+                        node = actualnode->father;
+                        tree.deleteChilds(actualnode->father);
+                    }
+                    done = runAlgorithm(node, indexWord, height - 1, index, maxIndex);
 
 
-
-    if (height<0){
-        //ACABA
-    }
-
-    if (index.size()<= height){
-        index.push_back(0);
-
-        map<char,vector<string>>::iterator it= productions.find(actualnode->value);
-        if (it!=productions.end() ){
-            cout<<"EXISTE";
-            maxIndex.push_back(it->second.size());
-            runAlgorithm(actualnode,indexWord,height,col,index,maxIndex);
-        }else{
-            cout<<"NOEXISTE";
-        }
-
-    }else {
-        if (index[height] > maxIndex[height]){
-            //not more options
-            if (height!=0) {
-                index.pop_back();
-                maxIndex.pop_back();
-                index[height - 1]++;
-                //TODO borrar arbol¿?¿?
-                tree.deleteChilds(actualnode->father);
-            }
-                runAlgorithm(actualnode, indexWord, height - 1, col, index, maxIndex);
-
-        }else{
-
-            map<char,vector<string>>::iterator it= productions.find(actualnode->value);
-            if (it!=productions.end() ){
-                cout<<"EXISTE";
-                /*inutil
-                for (int i = index[height]; i < it->second.size(); ++i) { // < or <= ?¿
-                    it++;
-                }
-                */
-
-                tree.insertChilds(it->first, it->second[index[height]], index);
-                bool flagGoingGood = false;
-
-
-                //cambiar
-                string actualWord = tree.getWord();
-                if (actualWord == word.substr(0,actualWord.size() )) {
-                        flagGoingGood = true;
                 }
 
+            } else {
+                if (index[height] > maxIndex[height]) {
+                    //not more options
+                    Node *node = actualnode;
+                    if (height != 0) {
+                        index.pop_back();
+                        maxIndex.pop_back();
+                        index[height - 1]++;
+                        //TODO borrar arbol¿?¿?
+                        node = actualnode->father;
+                        tree.deleteChilds(actualnode->father);
+                    }
+                    done = runAlgorithm(node, indexWord, height - 1, index, maxIndex);
+
+                } else {
 
 
-                if (flagGoingGood) {
-                    Node *node = tree.getNextNonTerminal(actualnode);
-                    if (node != nullptr) {
-                        cout << "DISTINTO A NULL" << endl;
-                        runAlgorithm(node,indexWord,height+1,col,index,maxIndex);
+                    map<char, vector<string>>::iterator it = productions.find(actualnode->value);
+                    if (it != productions.end()) {
+                        cout << "EXISTE";
+
+
+                        tree.insertChilds(actualnode, it->first, it->second[index[height]], index);
+                        bool flagGoingGood = false;
+
+
+                        //cambiar
+
+                        if (!done && tree.getWord() == word.substr(0, tree.getWord().size())) {
+                            flagGoingGood = true;
+                        }
+
+
+                        if (flagGoingGood) {
+                            Node *node = tree.getNextNonTerminal(actualnode);
+                            if (node != nullptr) {
+                                cout << "DISTINTO A NULL" << endl;
+                                actualnode = node;
+                                done = runAlgorithm(actualnode, indexWord, height + 1, index, maxIndex);
+                                //TOOD comprobar
+
+                            } else {
+                                if (tree.getWord() == word) {
+                                    cout << "FINALIZADO";
+                                    return true; //check to step out here directly
+
+                                } else {
+                                    index[height]++;
+                                    tree.deleteChilds(actualnode);
+                                    done = runAlgorithm(actualnode, indexWord, height, index, maxIndex);
+
+
+                                }
+
+                            }
+                        } else {
+                            //comprobar
+                            index[height]++;
+                            tree.deleteChilds(actualnode);
+
+                            done = runAlgorithm(actualnode, indexWord, height, index, maxIndex);
+                        }
 
                     } else {
-                        if (tree.getWord() == word) {
-                            cout << "FINALIZADO";
-                        } else {
-                            if (height!=0){
-                                index[height-1]++;
-                                runAlgorithm(node,indexWord,height-1,col,index,maxIndex);
-
-                            }else{
-                                runAlgorithm(node,indexWord,height-1,col,index,maxIndex);
-                                //FINALIZA
-                            }
-
-
-                        }
-                        runAlgorithm(node,indexWord,height+1,col,index,maxIndex);
+                        cout << "NOEXISTE";
+                        return false; //check to step out here directly
                     }
-                }else{
-                    //comprobar
-                    index[height]++;
-                    tree.deleteChilds(actualnode);
 
-                    runAlgorithm(actualnode,indexWord,height,col,index,maxIndex);
 
                 }
-
-
-            }else{
-                cout<<"NOEXISTE";
             }
-
-
-
         }
-
     }
+    return done;
+}
 
+void MainWindow::drawTree() {
+
+    ui->treeWidget->clear();
+    // Set the number of columns in the tree
+    ui->treeWidget->setColumnCount(1);
+
+    // Add root nodes
+    addTreeRoot("A");
+    addTreeRoot("B");
+    addTreeRoot("C");
+
+
+}
+void MainWindow::addTreeRoot(QString name)
+{
+    // QTreeWidgetItem(QTreeWidget * parent, int type = Type)
+    QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui->treeWidget);
+
+    // QTreeWidgetItem::setText(int column, const QString & text)
+    treeItem->setText(0, name);
+    addTreeChild(treeItem, name + "A");
+    addTreeChild(treeItem, name + "B");
+}
+
+void MainWindow::addTreeChild(QTreeWidgetItem *parent, QString name)
+{
+    // QTreeWidgetItem(QTreeWidget * parent, int type = Type)
+    QTreeWidgetItem *treeItem = new QTreeWidgetItem();
+
+    // QTreeWidgetItem::setText(int column, const QString & text)
+    treeItem->setText(0, name);
+
+
+    // QTreeWidgetItem::addChild(QTreeWidgetItem * child)
+    parent->addChild(treeItem);
 }

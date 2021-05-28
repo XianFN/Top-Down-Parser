@@ -19,24 +19,17 @@ bool Tree::insertChild(Node * actualNode, char &value,int index, const bool &isf
 
     return true;
 }
-void Tree::insertChilds(char valueFather,string newchilds,vector<int> index){
-    Node * node;
-    if (index.size()==1){
-        node=root;
-    }else {
-        for (int i = 0; i < index.size(); ++i) {
-            node = node->childs[index[i]];
-        }
+void Tree::insertChilds(Node * node, char valueFather,string newchilds,vector<int> index){
 
-    }
+
 
         node->value=valueFather;
         for (int i = 0; i < newchilds.size(); ++i) {
                 if (!isupper(newchilds[i])){
                     cout<<"LOWER LETTER"<<endl;
-                    insertChild(root,newchilds[i],0,true);
+                    insertChild(node,newchilds[i],0,true);
                 }else{
-                    insertChild(root,newchilds[i],0,false);
+                    insertChild(node,newchilds[i],0,false);
                 }
         }
 
@@ -46,8 +39,10 @@ void Tree::insertChilds(char valueFather,string newchilds,vector<int> index){
 }
 
 string Tree::getWord(){
-    static string word ="";
-    static bool stop=false;
+    static string word ;
+    static bool stop;
+    word="";
+    stop=false;
     recursiveGetWord(root,word,stop);
     return word;
 }
@@ -67,9 +62,11 @@ bool Tree::recursiveGetWord(Node* node, string & word,bool & stop ){
 }
 Node* Tree::getNextNonTerminal(Node * actualNode){
 
-    static Node * node = nullptr;
-    static bool stop=false;
-    recursiveGetNextNonTerminal(actualNode,stop,node);
+    static Node * node;
+    node= nullptr;
+    static bool stop;
+    stop=false;
+    recursiveGetNextNonTerminal(root,stop,node);
 
     return node;
 

@@ -62,7 +62,7 @@ public:
     Tree();
     ~Tree();
     bool insertChild(Node * actualNode, char &value,int index, const bool &isfinal_);
-    void insertChilds(char valueFather,string newchilds,vector<int> index);
+    void insertChilds(Node * node, char valueFather,string newchilds,vector<int> index);
     string getWord();
     bool recursiveGetWord(Node * node ,string & word,bool & stop);
     bool deleteChilds(Node * node);
