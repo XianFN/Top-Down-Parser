@@ -71,9 +71,17 @@ void MainWindow::on_pushButton_clicked() {
     word= "aacbc";
     static vector<int> index;
     static vector<int> maxIndex;
+    index.clear();
+    maxIndex.clear();
+
+
     bool exist= runAlgorithm(tree.root,0,0,index,maxIndex);
+
+
     if (exist){
         ui->pushButton->setText("FUNCIONA");
+    }else{
+
     }
 
 }
@@ -82,9 +90,13 @@ bool MainWindow::runAlgorithm(Node* actualnode, int indexWord, int height, vecto
 
     bool done= false;
     if (!done) {
+
+
         drawTree();
+        sleep(1);
 
         if (height < 0) {
+            drawTree();
             return false;
         }else {
 
@@ -156,6 +168,7 @@ bool MainWindow::runAlgorithm(Node* actualnode, int indexWord, int height, vecto
                             } else {
                                 if (tree.getWord() == word) {
                                     cout << "FINALIZADO";
+                                    drawTree();
                                     return true; //check to step out here directly
 
                                 } else {
@@ -177,6 +190,7 @@ bool MainWindow::runAlgorithm(Node* actualnode, int indexWord, int height, vecto
 
                     } else {
                         cout << "NOEXISTE";
+                        drawTree();
                         return false; //check to step out here directly
                     }
 
@@ -194,33 +208,39 @@ void MainWindow::drawTree() {
     // Set the number of columns in the tree
     ui->treeWidget->setColumnCount(1);
 
+
     // Add root nodes
-    addTreeRoot("A");
-    addTreeRoot("B");
-    addTreeRoot("C");
-
-
-}
-void MainWindow::addTreeRoot(QString name)
-{
-    // QTreeWidgetItem(QTreeWidget * parent, int type = Type)
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui->treeWidget);
 
+    treeItem->setExpanded(true);
     // QTreeWidgetItem::setText(int column, const QString & text)
-    treeItem->setText(0, name);
-    addTreeChild(treeItem, name + "A");
-    addTreeChild(treeItem, name + "B");
+    QString str= QChar(tree.root->value);
+    treeItem->setText(0, str);
+    for (int i = 0; i < tree.root->childs.size(); ++i) {
+        addTreeChild(treeItem, tree.root->childs[i]);
+    }
+
+    ui->treeWidget->expandAll();
+    qApp->processEvents();
+
 }
 
-void MainWindow::addTreeChild(QTreeWidgetItem *parent, QString name)
+void MainWindow::addTreeChild(QTreeWidgetItem *parent, Node * node)
 {
-    // QTreeWidgetItem(QTreeWidget * parent, int type = Type)
     QTreeWidgetItem *treeItem = new QTreeWidgetItem();
 
-    // QTreeWidgetItem::setText(int column, const QString & text)
-    treeItem->setText(0, name);
+
+    QString str= QChar(node->value);
+    treeItem->setText(0, str);
 
 
-    // QTreeWidgetItem::addChild(QTreeWidgetItem * child)
+    for (int i = 0; i < node->childs.size(); ++i) {
+        addTreeChild(treeItem, node->childs[i]);
+    }
+    treeItem->setExpanded(true);
     parent->addChild(treeItem);
+
+
+
+
 }

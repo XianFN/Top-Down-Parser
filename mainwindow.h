@@ -13,6 +13,10 @@
 #include <iostream>
 #include <QTreeWidget>
 #include "Tree.h"
+#include <unistd.h>
+#include <iostream>
+#include <cstdlib>
+
 using namespace std;
 
 QT_BEGIN_NAMESPACE
@@ -33,8 +37,8 @@ public:
     void drawTree();
     void OpenQFile();
     bool runAlgorithm(Node* actualnode, int indexWord, int height,vector<int> &index, vector<int> &maxIndex);
-    void addTreeRoot(QString name);
-    void addTreeChild(QTreeWidgetItem *parent, QString name);
+
+    void addTreeChild(QTreeWidgetItem *parent, Node * node);
     private slots:
     void on_pushButton_clicked();
 private:
