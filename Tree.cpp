@@ -11,25 +11,27 @@ Tree::Tree(){
 Tree::~Tree(){
     clearRecursive(root);
 }
-bool Tree::insertChild(Node * actualNode, char &value,int index, const bool &isfinal_)
+bool Tree::insertChild(Node * actualNode, char &value,int index,int height, const bool &isfinal_)
 {
     bool isTaller = false;
-    Node * newNode = new Node(value,isfinal_,index,actualNode);
+    Node * newNode = new Node(value,isfinal_,index,height, actualNode);
     actualNode->childs.push_back(newNode);
 
     return true;
 }
-void Tree::insertChilds(Node * node, char valueFather,string newchilds,vector<int> index){
+void Tree::insertChilds(Node * node, char valueFather,int height,string newchilds){
 
 
-
+        int index=0;
         node->value=valueFather;
         for (int i = 0; i < newchilds.size(); ++i) {
                 if (!isupper(newchilds[i])){
                     cout<<"LOWER LETTER"<<endl;
-                    insertChild(node,newchilds[i],0,true);
+                    insertChild(node,newchilds[i],0,height,true);
+
                 }else{
-                    insertChild(node,newchilds[i],0,false);
+                    insertChild(node,newchilds[i],index,height,false);
+                    index++;
                 }
         }
 

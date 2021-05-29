@@ -27,6 +27,7 @@ public:
         isFinal=false;
         father= nullptr;
         index=0;
+        height=0;
 
     }
 
@@ -35,20 +36,21 @@ public:
         isFinal=false;
         father= nullptr;
         index=0;
-
+        height=0;
     }
     Node(char value_, bool isfinal_,int index_) {
         value = value_;
         isFinal=isfinal_;
         father= nullptr;
         index=index_;
-
+        height=0;
     }
-    Node(char value_, bool isfinal_,int index_,Node * father_) {
+    Node(char value_, bool isfinal_,int index_,int height_,Node * father_) {
         value = value_;
         isFinal=isfinal_;
         father= father_;
         index=index_;
+        height= height_;
 
     }
 
@@ -61,8 +63,8 @@ public:
 
     Tree();
     ~Tree();
-    bool insertChild(Node * actualNode, char &value,int index, const bool &isfinal_);
-    void insertChilds(Node * node, char valueFather,string newchilds,vector<int> index);
+    bool insertChild(Node * actualNode, char &value,int index,int height, const bool &isfinal_);
+    void insertChilds(Node * node, char valueFather,int height,string newchilds);
     string getWord();
     bool recursiveGetWord(Node * node ,string & word,bool & stop);
     bool deleteChilds(Node * node);

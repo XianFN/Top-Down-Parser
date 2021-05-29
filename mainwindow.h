@@ -36,7 +36,7 @@ public:
     ~MainWindow() override;
     void drawTree();
     void OpenQFile();
-    bool runAlgorithm(Node* actualnode, int indexWord, int height,vector<int> &index, vector<int> &maxIndex);
+    bool runAlgorithm(Node* actualnode, vector<int> indexNonTerminal, int height, vector<vector<int>> &index, vector<vector<int>> &maxIndex);
 
     void addTreeChild(QTreeWidgetItem *parent, Node * node);
     private slots:
