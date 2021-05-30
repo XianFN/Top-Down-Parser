@@ -58,6 +58,7 @@ void MainWindow::OpenQFile() {
             productions.insert({key, productionsVector});
 
 
+
         }
     }
     myReadFile.close();
@@ -74,12 +75,20 @@ void MainWindow::on_pushButton_clicked() {
     static vector<vector<int>> index;
     static vector<vector<int>> maxIndex;
     static vector<int> indexNonTerminal;
+    static int height;
+    height =0;
     indexNonTerminal.clear();
     index.clear();
     maxIndex.clear();
 
 
-    bool exist= runAlgorithm(tree.root,indexNonTerminal,0,index,maxIndex);
+    bool exist;
+    if (word!=""){
+         exist= runAlgorithm(tree.root,indexNonTerminal,height,index,maxIndex);
+    }else{
+        exist = false;
+    }
+
 
 
     if (exist){
@@ -96,7 +105,7 @@ void MainWindow::on_pushButton_clicked() {
 
 }
 
-bool MainWindow::runAlgorithm(Node* actualnode, vector<int> indexNonTerminal, int height, vector<vector<int>> &index, vector<vector<int>> &maxIndex ) {
+bool MainWindow::runAlgorithm(Node* actualnode, vector<int> indexNonTerminal, int & height, vector<vector<int>> &index, vector<vector<int>> &maxIndex ) {
 
     bool done= false;
     if (!done) {
@@ -132,8 +141,9 @@ bool MainWindow::runAlgorithm(Node* actualnode, vector<int> indexNonTerminal, in
                             if (it != productions.end() && done != true) { //check
                                 maxIndex[height].push_back(it->second.size() - 1);
                                 index[height].push_back(0);
+                                hasNonTerminal = true;
                             }
-                            hasNonTerminal = true;
+
 
                         }
 
@@ -148,66 +158,46 @@ bool MainWindow::runAlgorithm(Node* actualnode, vector<int> indexNonTerminal, in
                         index.pop_back();
                         maxIndex.pop_back();
                         index[height - 1][indexNonTerminal[height-1]]++;
-                        //TODO borrar arbol¿?¿?
                         node = actualnode->father;
                         tree.deleteChilds(actualnode->father);
                     }
-                    done = runAlgorithm(node, indexNonTerminal, height - 1, index, maxIndex);
+                    height--;
+                    done = runAlgorithm(node, indexNonTerminal, height, index, maxIndex);
 
                 }
 
-        /*
-                map<char, vector<string>>::iterator it = productions.find(actualnode->value);
-                if (it != productions.end() && done != true) { //check
-                    cout << "EXISTE2";
-                    maxIndex[height].push_back(it->second.size() - 1);
-                    done = runAlgorithm(actualnode, indexNonTerminal, height, index, maxIndex);
-
-                } else {
-                    Node *node = actualnode;
-                    if (height != 0) {
-                        index.pop_back();
-                        maxIndex.pop_back();
-                        index[height - 1]++;
-                        //TODO borrar arbol¿?¿?
-                        node = actualnode->father;
-                        tree.deleteChilds(actualnode->father);
-                    }
-                    done = runAlgorithm(node, indexNonTerminal, height - 1, index, maxIndex);
-
-
-                }
-                */
 
             } else {
                 if (index[height][indexNonTerminal[height]] > maxIndex[height][indexNonTerminal[height]]) {
-                    //not more options
+
                     Node *node = actualnode;
                     if (height != 0) {
                         index.pop_back();
                         maxIndex.pop_back();
                         index[height - 1][indexNonTerminal[height-1]]++;
-                        //TODO borrar arbol¿?¿?
                         node = actualnode->father;
                         tree.deleteChilds(actualnode->father);
                     }else{
                         return false;
                     }
-                    done = runAlgorithm(node, indexNonTerminal, height - 1, index, maxIndex);
+                    height--;
+                    done = runAlgorithm(node, indexNonTerminal, height, index, maxIndex);
 
                 } else {
 
 
                     map<char, vector<string>>::iterator it = productions.find(actualnode->value);
                     if (it != productions.end()) {
-                        cout << "EXISTE";
 
+                        if (index.size() > height+1){
+                            tree.insertChilds(actualnode, it->first,height+1, it->second[index[height][indexNonTerminal[height]]],index[height+1].size());
 
-                        tree.insertChilds(actualnode, it->first,height+1, it->second[index[height][indexNonTerminal[height]]]);
+                        }else{
+                            tree.insertChilds(actualnode, it->first,height+1, it->second[index[height][indexNonTerminal[height]]]);
+
+                        }
                         bool flagGoingGood = false;
 
-
-                        //cambiar
 
                         if (!done && tree.getWord() == word.substr(0, tree.getWord().size())) {
                             flagGoingGood = true;
@@ -218,22 +208,27 @@ bool MainWindow::runAlgorithm(Node* actualnode, vector<int> indexNonTerminal, in
 
                             Node *node = tree.getNextNonTerminal(actualnode);
                             if (node != nullptr) {
-                                cout << "DISTINTO A NULL" << endl;
-                                if (actualnode->height== node->height){
-                                    indexNonTerminal[height]= node->index;
-                                    actualnode = node;
-                                    done = runAlgorithm(actualnode, indexNonTerminal, height, index, maxIndex);
-                                }else{
-                                    actualnode = node;
-                                    done = runAlgorithm(actualnode, indexNonTerminal, height + 1, index, maxIndex);
+                                actualnode = node;
+                                indexNonTerminal[actualnode->height]= actualnode->index;
+                                height=actualnode->height;
+                                if (indexNonTerminal[actualnode->height]> index[actualnode->height].size()-1){
+                                    map<char, vector<string>>::iterator it = productions.find(actualnode->value);
+                                    if (it != productions.end() && done != true) { //check
+
+                                        maxIndex[height].push_back(it->second.size() - 1);
+                                        index[height].push_back(0);
+                                    }
+
+
+
                                 }
 
+                                done = runAlgorithm(actualnode, indexNonTerminal, height, index, maxIndex);
 
-                                //TOOD comprobar
 
                             } else {
                                 if (tree.getWord() == word) {
-                                    cout << "FINALIZADO";
+                                    cout << "FINISH";
                                     drawTree();
                                     return true; //check to step out here directly
 
@@ -247,7 +242,7 @@ bool MainWindow::runAlgorithm(Node* actualnode, vector<int> indexNonTerminal, in
 
                             }
                         } else {
-                            //comprobar
+
                             index[height][indexNonTerminal[height]]++;
                             tree.deleteChilds(actualnode);
 
@@ -255,7 +250,6 @@ bool MainWindow::runAlgorithm(Node* actualnode, vector<int> indexNonTerminal, in
                         }
 
                     } else {
-                        cout << "NOEXISTE";
                         drawTree();
                         return false; //check to step out here directly
                     }

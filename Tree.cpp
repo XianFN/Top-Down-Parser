@@ -26,7 +26,6 @@ void Tree::insertChilds(Node * node, char valueFather,int height,string newchild
         node->value=valueFather;
         for (int i = 0; i < newchilds.size(); ++i) {
                 if (!isupper(newchilds[i])){
-                    cout<<"LOWER LETTER"<<endl;
                     insertChild(node,newchilds[i],0,height,true);
 
                 }else{
@@ -34,9 +33,6 @@ void Tree::insertChilds(Node * node, char valueFather,int height,string newchild
                     index++;
                 }
         }
-
-
-
 
 }
 
@@ -111,5 +107,19 @@ void Tree::clearRecursive(Node *& tree)
 
         delete tree;
         tree = nullptr;
+    }
+}
+
+void Tree::insertChilds(Node *node, char valueFather, int height, string newchilds, int startingIndex) {
+
+    node->value=valueFather;
+    for (int i = 0; i < newchilds.size(); ++i) {
+        if (!isupper(newchilds[i])){
+            insertChild(node,newchilds[i],0,height,true);
+
+        }else{
+            insertChild(node,newchilds[i],startingIndex,height,false);
+            startingIndex++;
+        }
     }
 }
