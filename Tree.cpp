@@ -19,11 +19,12 @@ bool Tree::insertChild(Node * actualNode, char &value,int index,int height, cons
 
     return true;
 }
-void Tree::insertChilds(Node * node, char valueFather,int height,string newchilds){
+void Tree::insertChilds(Node * node, char valueFather,int height,string newchilds, int indexNonTerminal){
 
 
         int index=0;
         node->value=valueFather;
+        node->indexNonTerminal=indexNonTerminal;
         for (int i = 0; i < newchilds.size(); ++i) {
                 if (!isupper(newchilds[i])){
                     insertChild(node,newchilds[i],0,height,true);
@@ -47,7 +48,9 @@ string Tree::getWord(){
 bool Tree::recursiveGetWord(Node* node, string & word,bool & stop ){
 
     if (node->isFinal && !stop){
-        word += node->value;
+        if (node->value!='e'){
+            word += node->value;
+        }
     }
     if (!node->isFinal && node->childs.size()==0){
         stop=true;
@@ -110,9 +113,10 @@ void Tree::clearRecursive(Node *& tree)
     }
 }
 
-void Tree::insertChilds(Node *node, char valueFather, int height, string newchilds, int startingIndex) {
+void Tree::insertChilds(Node *node, char valueFather, int height, string newchilds, int startingIndex, int indexNonTerminal) {
 
     node->value=valueFather;
+    node->indexNonTerminal=indexNonTerminal;
     for (int i = 0; i < newchilds.size(); ++i) {
         if (!isupper(newchilds[i])){
             insertChild(node,newchilds[i],0,height,true);

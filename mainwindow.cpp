@@ -83,25 +83,39 @@ void MainWindow::on_pushButton_clicked() {
 
 
     bool exist;
-    if (word!=""){
-         exist= runAlgorithm(tree.root,indexNonTerminal,height,index,maxIndex);
-    }else{
-        exist = false;
-    }
-
-
-
-    if (exist){
-        ui->label->setText("TRUE, The word is correct for this grammar.");
-        QPalette palette = ui->label->palette();
-        palette.setColor(ui->label->foregroundRole(), Qt::green);
-        ui->label->setPalette(palette);
-    }else{
-        ui->label->setText("FALSE, The word is not correct for this grammar.");
+    if (word=="") {
+        ui->label->setText("PLEASE enter a word");
         QPalette palette = ui->label->palette();
         palette.setColor(ui->label->foregroundRole(), Qt::red);
         ui->label->setPalette(palette);
+
+    }else if (word.find('e') != std::string::npos) {
+
+        ui->label->setText("The word shouldn't contain empty symbol e");
+        QPalette palette = ui->label->palette();
+        palette.setColor(ui->label->foregroundRole(), Qt::red);
+        ui->label->setPalette(palette);
+    }else{
+
+         exist= runAlgorithm(tree.root,indexNonTerminal,height,index,maxIndex);
+
+        if (exist){
+            ui->label->setText("TRUE, The word is correct for this grammar.");
+            QPalette palette = ui->label->palette();
+            palette.setColor(ui->label->foregroundRole(), Qt::green);
+            ui->label->setPalette(palette);
+        }else{
+            ui->label->setText("FALSE, The word is not correct for this grammar.");
+            QPalette palette = ui->label->palette();
+            palette.setColor(ui->label->foregroundRole(), Qt::red);
+            ui->label->setPalette(palette);
+        }
+
     }
+
+
+
+
 
 }
 
@@ -190,12 +204,13 @@ bool MainWindow::runAlgorithm(Node* actualnode, vector<int> indexNonTerminal, in
                     if (it != productions.end()) {
 
                         if (index.size() > height+1){
-                            tree.insertChilds(actualnode, it->first,height+1, it->second[index[height][indexNonTerminal[height]]],index[height+1].size());
+                            tree.insertChilds(actualnode, it->first,height+1, it->second[index[height][indexNonTerminal[height]]],index[height+1].size(),index[height][indexNonTerminal[height]]);
 
                         }else{
-                            tree.insertChilds(actualnode, it->first,height+1, it->second[index[height][indexNonTerminal[height]]]);
+                            tree.insertChilds(actualnode, it->first,height+1, it->second[index[height][indexNonTerminal[height]]],index[height][indexNonTerminal[height]]);
 
                         }
+
                         bool flagGoingGood = false;
 
 
@@ -275,6 +290,8 @@ void MainWindow::drawTree() {
     treeItem->setExpanded(true);
     // QTreeWidgetItem::setText(int column, const QString & text)
     QString str= QChar(tree.root->value);
+    str+= '/';
+    str+= QString::number(tree.root->indexNonTerminal);
     treeItem->setText(0, str);
     for (int i = 0; i < tree.root->childs.size(); ++i) {
         addTreeChild(treeItem, tree.root->childs[i]);
@@ -291,6 +308,10 @@ void MainWindow::addTreeChild(QTreeWidgetItem *parent, Node * node)
 
 
     QString str= QChar(node->value);
+    if (!node->isFinal){
+        str+= '/';
+        str+= QString::number(node->indexNonTerminal);
+    }
     treeItem->setText(0, str);
 
 

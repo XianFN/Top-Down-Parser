@@ -1,4 +1,4 @@
 S -> aSbS | aS | T
 T -> c | hH
-H -> E | e | J
-J -> ε
+H -> E | J
+J -> j
